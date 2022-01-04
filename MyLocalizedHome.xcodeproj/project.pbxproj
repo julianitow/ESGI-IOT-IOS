@@ -8,9 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		4D74DE55278482B400684178 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D74DE54278482B400684178 /* AppDelegate.swift */; };
-		4D74DE57278482B400684178 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D74DE56278482B400684178 /* SceneDelegate.swift */; };
-		4D74DE59278482B400684178 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D74DE58278482B400684178 /* ViewController.swift */; };
-		4D74DE5C278482B400684178 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4D74DE5A278482B400684178 /* Main.storyboard */; };
 		4D74DE5E278482B500684178 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4D74DE5D278482B500684178 /* Assets.xcassets */; };
 		4D74DE61278482B500684178 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4D74DE5F278482B500684178 /* LaunchScreen.storyboard */; };
 		4D74DE66278482B500684178 /* MyLocalizedHome WatchKit App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 4D74DE65278482B500684178 /* MyLocalizedHome WatchKit App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -22,16 +19,12 @@
 		4D74DE7D278482B700684178 /* NotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D74DE7C278482B700684178 /* NotificationController.swift */; };
 		4D74DE7F278482B700684178 /* ComplicationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D74DE7E278482B700684178 /* ComplicationController.swift */; };
 		4D74DE81278482B800684178 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4D74DE80278482B800684178 /* Assets.xcassets */; };
+		4D74DE932784838800684178 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D74DE912784838800684178 /* HomeViewController.swift */; };
+		4D74DE942784838800684178 /* HomeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4D74DE922784838800684178 /* HomeViewController.xib */; };
+		4D74DE9C2784889C00684178 /* HomeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D74DE9B2784889C00684178 /* HomeKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		4D74DE67278482B500684178 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4D74DE49278482B400684178 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4D74DE64278482B500684178;
-			remoteInfo = "MyLocalizedHome WatchKit App";
-		};
 		4D74DE75278482B700684178 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4D74DE49278482B400684178 /* Project object */;
@@ -69,9 +62,6 @@
 /* Begin PBXFileReference section */
 		4D74DE51278482B400684178 /* MyLocalizedHome.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyLocalizedHome.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D74DE54278482B400684178 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		4D74DE56278482B400684178 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		4D74DE58278482B400684178 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		4D74DE5B278482B400684178 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		4D74DE5D278482B500684178 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4D74DE60278482B500684178 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4D74DE62278482B500684178 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -86,6 +76,10 @@
 		4D74DE80278482B800684178 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4D74DE82278482B800684178 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4D74DE83278482B800684178 /* PushNotificationPayload.apns */ = {isa = PBXFileReference; lastKnownFileType = text; path = PushNotificationPayload.apns; sourceTree = "<group>"; };
+		4D74DE912784838800684178 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		4D74DE922784838800684178 /* HomeViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HomeViewController.xib; sourceTree = "<group>"; };
+		4D74DE992784885300684178 /* MyLocalizedHome.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MyLocalizedHome.entitlements; sourceTree = "<group>"; };
+		4D74DE9B2784889C00684178 /* HomeKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HomeKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS15.2.sdk/System/Library/Frameworks/HomeKit.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +87,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4D74DE9C2784889C00684178 /* HomeKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -113,6 +108,7 @@
 				4D74DE69278482B500684178 /* MyLocalizedHome WatchKit App */,
 				4D74DE77278482B700684178 /* MyLocalizedHome WatchKit Extension */,
 				4D74DE52278482B400684178 /* Products */,
+				4D74DE9A2784889C00684178 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -130,12 +126,12 @@
 			isa = PBXGroup;
 			children = (
 				4D74DE54278482B400684178 /* AppDelegate.swift */,
-				4D74DE56278482B400684178 /* SceneDelegate.swift */,
-				4D74DE58278482B400684178 /* ViewController.swift */,
-				4D74DE5A278482B400684178 /* Main.storyboard */,
 				4D74DE5D278482B500684178 /* Assets.xcassets */,
 				4D74DE5F278482B500684178 /* LaunchScreen.storyboard */,
 				4D74DE62278482B500684178 /* Info.plist */,
+				4D74DE912784838800684178 /* HomeViewController.swift */,
+				4D74DE922784838800684178 /* HomeViewController.xib */,
+				4D74DE992784885300684178 /* MyLocalizedHome.entitlements */,
 			);
 			path = MyLocalizedHome;
 			sourceTree = "<group>";
@@ -163,6 +159,14 @@
 			path = "MyLocalizedHome WatchKit Extension";
 			sourceTree = "<group>";
 		};
+		4D74DE9A2784889C00684178 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4D74DE9B2784889C00684178 /* HomeKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -178,7 +182,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				4D74DE68278482B500684178 /* PBXTargetDependency */,
 			);
 			name = MyLocalizedHome;
 			productName = MyLocalizedHome;
@@ -267,7 +270,7 @@
 			files = (
 				4D74DE61278482B500684178 /* LaunchScreen.storyboard in Resources */,
 				4D74DE5E278482B500684178 /* Assets.xcassets in Resources */,
-				4D74DE5C278482B400684178 /* Main.storyboard in Resources */,
+				4D74DE942784838800684178 /* HomeViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -295,9 +298,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4D74DE59278482B400684178 /* ViewController.swift in Sources */,
 				4D74DE55278482B400684178 /* AppDelegate.swift in Sources */,
-				4D74DE57278482B400684178 /* SceneDelegate.swift in Sources */,
+				4D74DE932784838800684178 /* HomeViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -315,11 +317,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		4D74DE68278482B500684178 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4D74DE64278482B500684178 /* MyLocalizedHome WatchKit App */;
-			targetProxy = 4D74DE67278482B500684178 /* PBXContainerItemProxy */;
-		};
 		4D74DE76278482B700684178 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 4D74DE72278482B700684178 /* MyLocalizedHome WatchKit Extension */;
@@ -328,14 +325,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		4D74DE5A278482B400684178 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				4D74DE5B278482B400684178 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		4D74DE5F278482B500684178 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -587,14 +576,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MyLocalizedHome/MyLocalizedHome.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 8Y746A2BHG;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MyLocalizedHome/Info.plist;
+				INFOPLIST_KEY_NSHomeKitUsageDescription = "Oh mignon on te voit oui !";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
@@ -617,14 +607,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MyLocalizedHome/MyLocalizedHome.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 8Y746A2BHG;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MyLocalizedHome/Info.plist;
+				INFOPLIST_KEY_NSHomeKitUsageDescription = "Oh mignon on te voit oui !";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
