@@ -12,6 +12,7 @@
             <connections>
                 <outlet property="houseNameLabel" destination="dKq-K1-Eg3" id="afB-KQ-IwF"/>
                 <outlet property="humValueLabel" destination="LgW-kg-PRk" id="B0b-Xa-r3O"/>
+                <outlet property="relaySwitch" destination="esR-rO-2DN" id="UFi-n5-bCb"/>
                 <outlet property="tempValueLabel" destination="Su7-LX-7Oc" id="w9P-T6-3BG"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="0L4-br-4GQ"/>
             </connections>
@@ -51,6 +52,18 @@
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
+                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="esR-rO-2DN">
+                    <rect key="frame" x="160" y="302" width="51" height="31"/>
+                    <connections>
+                        <action selector="relaySwitchChanged:" destination="-1" eventType="valueChanged" id="f0e-HN-h6O"/>
+                    </connections>
+                </switch>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Relay:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="w6c-AM-gt5">
+                    <rect key="frame" x="50" y="307" width="46" height="21"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -59,11 +72,15 @@
                 <constraint firstItem="dKq-K1-Eg3" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="80" id="Sb4-Zq-USk"/>
                 <constraint firstItem="dKq-K1-Eg3" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="160" id="Vk2-fU-wWP"/>
                 <constraint firstItem="LgW-kg-PRk" firstAttribute="top" secondItem="Su7-LX-7Oc" secondAttribute="bottom" constant="10" id="aJs-FM-2ar"/>
+                <constraint firstItem="esR-rO-2DN" firstAttribute="top" secondItem="LgW-kg-PRk" secondAttribute="bottom" constant="16" id="fdQ-aw-3nf"/>
                 <constraint firstItem="Su7-LX-7Oc" firstAttribute="top" secondItem="dKq-K1-Eg3" secondAttribute="bottom" constant="62" id="fvb-mh-AOS"/>
                 <constraint firstItem="LgW-kg-PRk" firstAttribute="leading" secondItem="PsV-xe-H5r" secondAttribute="trailing" constant="39" id="gqR-Gd-3DJ"/>
                 <constraint firstItem="PsV-xe-H5r" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="50" id="h1g-Tz-f5x"/>
+                <constraint firstItem="w6c-AM-gt5" firstAttribute="top" secondItem="PsV-xe-H5r" secondAttribute="bottom" constant="21" id="mzO-OW-81U"/>
+                <constraint firstItem="w6c-AM-gt5" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="50" id="qN9-fU-Wlg"/>
                 <constraint firstItem="1SQ-Y0-DDQ" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="50" id="qTa-xm-JVw"/>
                 <constraint firstItem="PsV-xe-H5r" firstAttribute="top" secondItem="1SQ-Y0-DDQ" secondAttribute="bottom" constant="10" id="upt-0H-j5S"/>
+                <constraint firstItem="esR-rO-2DN" firstAttribute="leading" secondItem="w6c-AM-gt5" secondAttribute="trailing" constant="64" id="yg6-um-mLv"/>
                 <constraint firstItem="Su7-LX-7Oc" firstAttribute="leading" secondItem="1SQ-Y0-DDQ" secondAttribute="trailing" constant="10" id="zFi-qY-hSt"/>
             </constraints>
             <point key="canvasLocation" x="132" y="82"/>
