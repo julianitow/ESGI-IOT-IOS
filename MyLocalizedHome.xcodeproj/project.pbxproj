@@ -10,7 +10,6 @@
 		4D74DE55278482B400684178 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D74DE54278482B400684178 /* AppDelegate.swift */; };
 		4D74DE5E278482B500684178 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4D74DE5D278482B500684178 /* Assets.xcassets */; };
 		4D74DE61278482B500684178 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4D74DE5F278482B500684178 /* LaunchScreen.storyboard */; };
-		4D74DE66278482B500684178 /* MyLocalizedHome WatchKit App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 4D74DE65278482B500684178 /* MyLocalizedHome WatchKit App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		4D74DE6C278482B500684178 /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4D74DE6A278482B500684178 /* Interface.storyboard */; };
 		4D74DE6E278482B600684178 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4D74DE6D278482B600684178 /* Assets.xcassets */; };
 		4D74DE74278482B700684178 /* MyLocalizedHome WatchKit Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 4D74DE73278482B700684178 /* MyLocalizedHome WatchKit Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -52,7 +51,6 @@
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolderSpec = 16;
 			files = (
-				4D74DE66278482B500684178 /* MyLocalizedHome WatchKit App.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
