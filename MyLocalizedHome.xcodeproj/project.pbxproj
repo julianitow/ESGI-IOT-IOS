@@ -21,6 +21,10 @@
 		4D74DE932784838800684178 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D74DE912784838800684178 /* HomeViewController.swift */; };
 		4D74DE942784838800684178 /* HomeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4D74DE922784838800684178 /* HomeViewController.xib */; };
 		4D74DE9C2784889C00684178 /* HomeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D74DE9B2784889C00684178 /* HomeKit.framework */; };
+		4D74DE9F2785D38B00684178 /* RelayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D74DE9D2785D38B00684178 /* RelayViewController.swift */; };
+		4D74DEA02785D38B00684178 /* RelayViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4D74DE9E2785D38B00684178 /* RelayViewController.xib */; };
+		4D74DEA32785D3F500684178 /* LightsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D74DEA12785D3F500684178 /* LightsViewController.swift */; };
+		4D74DEA42785D3F500684178 /* LightsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4D74DEA22785D3F500684178 /* LightsViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -78,6 +82,10 @@
 		4D74DE922784838800684178 /* HomeViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HomeViewController.xib; sourceTree = "<group>"; };
 		4D74DE992784885300684178 /* MyLocalizedHome.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MyLocalizedHome.entitlements; sourceTree = "<group>"; };
 		4D74DE9B2784889C00684178 /* HomeKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HomeKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS15.2.sdk/System/Library/Frameworks/HomeKit.framework; sourceTree = DEVELOPER_DIR; };
+		4D74DE9D2785D38B00684178 /* RelayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayViewController.swift; sourceTree = "<group>"; };
+		4D74DE9E2785D38B00684178 /* RelayViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RelayViewController.xib; sourceTree = "<group>"; };
+		4D74DEA12785D3F500684178 /* LightsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightsViewController.swift; sourceTree = "<group>"; };
+		4D74DEA22785D3F500684178 /* LightsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LightsViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,6 +138,10 @@
 				4D74DE912784838800684178 /* HomeViewController.swift */,
 				4D74DE922784838800684178 /* HomeViewController.xib */,
 				4D74DE992784885300684178 /* MyLocalizedHome.entitlements */,
+				4D74DE9D2785D38B00684178 /* RelayViewController.swift */,
+				4D74DE9E2785D38B00684178 /* RelayViewController.xib */,
+				4D74DEA12785D3F500684178 /* LightsViewController.swift */,
+				4D74DEA22785D3F500684178 /* LightsViewController.xib */,
 			);
 			path = MyLocalizedHome;
 			sourceTree = "<group>";
@@ -266,9 +278,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4D74DEA02785D38B00684178 /* RelayViewController.xib in Resources */,
 				4D74DE61278482B500684178 /* LaunchScreen.storyboard in Resources */,
 				4D74DE5E278482B500684178 /* Assets.xcassets in Resources */,
 				4D74DE942784838800684178 /* HomeViewController.xib in Resources */,
+				4D74DEA42785D3F500684178 /* LightsViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -296,8 +310,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4D74DE9F2785D38B00684178 /* RelayViewController.swift in Sources */,
 				4D74DE55278482B400684178 /* AppDelegate.swift in Sources */,
 				4D74DE932784838800684178 /* HomeViewController.swift in Sources */,
+				4D74DEA32785D3F500684178 /* LightsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
