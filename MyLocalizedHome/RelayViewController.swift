@@ -15,7 +15,7 @@ class RelayViewController: UIViewController {
 
     }
 
-    class func newInstance(relay: HMAccessory) -> RelayViewController {
+    class func newInstance() -> RelayViewController {
         let rvc = RelayViewController()
         return rvc
     }

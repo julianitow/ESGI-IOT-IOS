@@ -2,11 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>oui oui</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>OuiOui</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Oui oui</string>
+	<key>kRTCReportingSessionInfoClientBundleID</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 </dict>
 </plist>

@@ -23,8 +23,12 @@ class HomeViewController: UIViewController {
     var homeManager: HMHomeManager!
     var primaryHome: HMHome!
     var relayPowerStateCharacteristic: HMCharacteristic!
+    var thermometre: HMAccessory!
+    var relay: HMAccessory!
+    var humidityCharacteristic: HMCharacteristic!
     
     var locationManager: CLLocationManager!
+    var home: HMHome!
 
     @IBOutlet var houseNameLabel: UILabel!
     @IBOutlet var tempValueLabel: UILabel!
@@ -41,11 +45,13 @@ class HomeViewController: UIViewController {
     var currentPlace: MKPlacemark!
     var homePlace: MKPointAnnotation!
     
+    var limitTemp = 20.0
+    var currentTemp: Double!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.homeManager = HMHomeManager()
         self.homeManager.delegate = self
-        
         self.locationManager = CLLocationManager()
         self.locationManager.requestAlwaysAuthorization()
         
@@ -56,7 +62,7 @@ class HomeViewController: UIViewController {
             
             self.mapView.delegate = self
             
-            //TMP for dev
+            //TMP for dev, à l'avenir, faire une entrée user pour sélectionner l'adresse du lieu principal
             self.homeLocation = self.locationManager.location
             self.getAddress(from: self.homeLocation){ addr in
                 self.homeAddress = addr
@@ -74,15 +80,65 @@ class HomeViewController: UIViewController {
                 self.homePlace.title = "homePlace"
                 self.homePlace.coordinate = self.homeLocation.coordinate
                 self.mapView.addAnnotation(self.homePlace)
-                self.initTimer()
+                self.initTimerRequests()
+                self.restartHomeManager()
             }
             
         }
     }
     
-    func initTimer() {
-        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+    func initTimerRequests() {
+        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
             self.currentSeconds += 1
+        }
+    }
+    
+    func updateTemperature() {
+        self.getValueFrom(accessory: self.thermometre, characteristicType: HMCharacteristicTypeCurrentTemperature) { val in
+            guard let temperature = val else {
+                return
+            }
+            let temp = temperature as! Double
+            DispatchQueue.main.async {
+                self.tempValueLabel.text = "\(String(temp))°c"
+                self.currentTemp = temp
+            }
+        }
+    }
+    
+    func updateHumidity() {
+        self.getValueFrom(accessory: self.thermometre, characteristicType: HMCharacteristicTypeCurrentRelativeHumidity) { val in
+            guard let humidity = val else {
+                return
+            }
+            let hum = humidity as! Double
+            DispatchQueue.main.async {
+                self.humValueLabel.text = "\(String(hum))%"
+            }
+        }
+    }
+    
+    func updateRelay() {
+        self.getValueFrom(accessory: self.relay, characteristicType: HMCharacteristicTypePowerState) { val in
+            let state = Bool(val as! Int == 1)
+            self.relaySwitch.isOn = state
+            for service in self.relay.services {
+                for characteristic in service.characteristics {
+                    if characteristic.characteristicType == HMCharacteristicTypePowerState {
+                        self.relayPowerStateCharacteristic = characteristic
+                    }
+                }
+            }
+        }
+    }
+    
+    func restartHomeManager() {
+        Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { _ in
+            self.homeManager = HMHomeManager()
+            self.homeManager.delegate = self
+            self.initAccessories()
+            self.temperatureRule()
+            print("Restarting homemanager...Ok")
         }
     }
     
@@ -114,18 +170,19 @@ class HomeViewController: UIViewController {
         navigationController?.pushViewController(lvc, animated: true)
     }
     
-    func getValueFrom(accessory: HMAccessory, characteristicType: String) -> Any? {
+    func getValueFrom(accessory: HMAccessory, characteristicType: String, completion: @escaping(Any?) -> Void) -> Void {
         for service in accessory.services {
             for characteristic in service.characteristics {
                 if characteristic.characteristicType == characteristicType {
-                    guard let value = characteristic.value else {
-                        return nil
+                    characteristic.readValue { err in
+                        if err != nil {
+                            print("ERROR \(err!.localizedDescription)")
+                        }
                     }
-                    return value
+                    completion(characteristic.value)
                 }
             }
         }
-        return nil
     }
     
     func writeValue(characteristic: HMCharacteristic, value: Int) -> Void {
@@ -139,30 +196,31 @@ class HomeViewController: UIViewController {
             accessory.delegate = self
             print(accessory.name)
             if accessory.name.contains("temp") {
-                let value = self.getValueFrom(accessory: accessory, characteristicType: HMCharacteristicTypeCurrentTemperature) as! Double
-                self.tempValueLabel.text = "\(String(value))°c"
+                self.thermometre = accessory
+                self.updateTemperature()
             } else if accessory.name.contains("hum") {
-                let value = self.getValueFrom(accessory: accessory, characteristicType: HMCharacteristicTypeCurrentRelativeHumidity) as! Int
-                self.humValueLabel.text = "\(String(value))%"
-            } else if accessory.name.lowercased().contains("relais") {
-                for service in accessory.services {
-                    for characteristic in service.characteristics {
-                        if characteristic.characteristicType == HMCharacteristicTypePowerState {
-                            let value = characteristic.value as! Int
-                            let val = Bool(value == 1)
-                            self.relaySwitch.isOn = val
-                            self.relayPowerStateCharacteristic = characteristic
-                        }
-                    }
+                if self.thermometre != nil {
+                    self.updateHumidity()
                 }
+            } else if accessory.name.lowercased().contains("relais") {
+                self.relay = accessory
+                self.updateRelay()
             }
+        }
+    }
+    
+    func temperatureRule() {
+        if self.currentTemp < self.limitTemp {
+            self.writeValue(characteristic: self.relayPowerStateCharacteristic, value: 1)
+        } else {
+            self.writeValue(characteristic: self.relayPowerStateCharacteristic, value: 0)
         }
     }
     
     func getAddress(from location: CLLocation, completion: @escaping (Address) -> Void) -> Void {
         //limit to one request per minute for geocoder server
         if self.currentSeconds < 60 {
-            print("next authorized in \(60 - self.currentSeconds)s deso")
+            //print("next authorized in \(60 - self.currentSeconds)s deso")
             return
         }
         let geocoder = CLGeocoder()
@@ -227,14 +285,19 @@ extension HomeViewController: CLLocationManagerDelegate, MKMapViewDelegate {
     }
 }
 
-extension HomeViewController: HMHomeManagerDelegate {
+extension HomeViewController: HMHomeManagerDelegate, HMHomeDelegate {
+    
+    //HOMEAMANGER DELEGATE
     func homeManager(_ manager: HMHomeManager, didUpdate status: HMHomeManagerAuthorizationStatus) {
         print("Updated Home")
     }
     
     func homeManagerDidUpdateHomes(_ manager: HMHomeManager) {
         print("update homes")
+        self.homeManager = manager
+        self.homeManager.delegate = self
         self.primaryHome = manager.homes.first
+        self.primaryHome.delegate = self
         self.houseNameLabel.text = self.primaryHome.name
         self.initAccessories()
     }
@@ -244,5 +307,6 @@ extension HomeViewController: HMAccessoryDelegate {
     func accessory(_ accessory: HMAccessory, service: HMService, didUpdateValueFor characteristic: HMCharacteristic) {
         print("UPDATE", accessory.name)
         self.initAccessories()
+        self.temperatureRule()
     }
 }
