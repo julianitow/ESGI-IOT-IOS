@@ -42,7 +42,7 @@ class HomeViewController: UIViewController {
     var currentAdress: Address!
     
     var currentSeconds: Int = 60
-    var currentPlace: MKPlacemark!
+    var currentPlace: MKPointAnnotation!
     var homePlace: MKPointAnnotation!
     
     var limitTemp = 20.0
@@ -76,15 +76,20 @@ class HomeViewController: UIViewController {
                 let currentRegion = MKCoordinateRegion(center: home2DCoordinates, span: span)
                 self.mapView.setRegion(currentRegion, animated: true)
                 
-                self.homePlace = MKPointAnnotation()
-                self.homePlace.title = "homePlace"
-                self.homePlace.coordinate = self.homeLocation.coordinate
+                self.homePlace = self.createPlace(from: self.homeLocation, title: "home")
                 self.mapView.addAnnotation(self.homePlace)
                 self.initTimerRequests()
                 self.restartHomeManager()
             }
             
         }
+    }
+    
+    func createPlace(from location: CLLocation, title: String) -> MKPointAnnotation {
+        let place = MKPointAnnotation()
+        place.title = title
+        place.coordinate = location.coordinate
+        return place
     }
     
     func initTimerRequests() {
@@ -120,8 +125,10 @@ class HomeViewController: UIViewController {
     
     func updateRelay() {
         self.getValueFrom(accessory: self.relay, characteristicType: HMCharacteristicTypePowerState) { val in
-            let state = Bool(val as! Int == 1)
-            self.relaySwitch.isOn = state
+            DispatchQueue.main.async {
+                let state = Bool(val as! Int == 1)
+                self.relaySwitch.isOn = state
+            }
             for service in self.relay.services {
                 for characteristic in service.characteristics {
                     if characteristic.characteristicType == HMCharacteristicTypePowerState {
@@ -140,12 +147,6 @@ class HomeViewController: UIViewController {
             self.temperatureRule()
             print("Restarting homemanager...Ok")
         }
-    }
-    
-    func createPlace(from location: CLLocation) -> MKPlacemark {
-        let loc2DCoordinates = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
-        let place = MKPlacemark(coordinate: loc2DCoordinates)
-        return place
     }
     
     @IBAction func relaySwitchChanged(_ sender: Any) {
@@ -266,7 +267,7 @@ extension HomeViewController: CLLocationManagerDelegate, MKMapViewDelegate {
             }
             if self.currentPlace != nil {
                 self.mapView.removeAnnotation(self.currentPlace)
-                self.currentPlace = self.createPlace(from: location)
+                self.currentPlace = self.createPlace(from: location, title: "Me")
                 self.mapView.addAnnotation(self.currentPlace)
             }
         }
@@ -274,9 +275,9 @@ extension HomeViewController: CLLocationManagerDelegate, MKMapViewDelegate {
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         let annotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: annotation.title ?? "place")
-        if annotation.title == "homePlace" {
+        if annotation.title == self.homePlace.title {
             annotationView.markerTintColor = .red
-            annotationView.glyphText = "Home"
+            annotationView.glyphText = self.homePlace.title
         } else {
             annotationView.markerTintColor = .blue
             annotationView.glyphText = "Me"
