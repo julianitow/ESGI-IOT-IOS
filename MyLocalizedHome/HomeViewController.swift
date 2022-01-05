@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import MapKit
 import HomeKit
 import CoreLocation
 
@@ -29,30 +30,62 @@ class HomeViewController: UIViewController {
     @IBOutlet var tempValueLabel: UILabel!
     @IBOutlet var humValueLabel: UILabel!
     @IBOutlet var relaySwitch: UISwitch!
+    @IBOutlet var mapView: MKMapView!
     
     var homeLocation: CLLocation!
     var homeAddress: Address!
     var currentAdress: Address!
     
+    var currentSeconds: Int = 60
+    var currentPlace: MKPlacemark!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.homeManager = HMHomeManager()
+        self.homeManager.delegate = self
         
         self.locationManager = CLLocationManager()
         self.locationManager.requestAlwaysAuthorization()
         
         if CLLocationManager.locationServicesEnabled() {
             self.locationManager.delegate = self
-            self.locationManager.delegate = self
             self.locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
             self.locationManager.startUpdatingLocation()
             
             //TMP for dev
             self.homeLocation = self.locationManager.location
-            self.getAddress(from: self.homeLocation) { addr in
+            self.getAddress(from: self.homeLocation){ addr in
                 self.homeAddress = addr
+                let latitude:CLLocationDegrees = self.homeLocation.coordinate.latitude
+                let longitude:CLLocationDegrees = self.homeLocation.coordinate.longitude
+                let latDelta:CLLocationDegrees = 0.05
+                let lonDelta:CLLocationDegrees = 0.05
+                let span = MKCoordinateSpan(latitudeDelta: latDelta, longitudeDelta: lonDelta)
+                
+                let home2DCoordinates = CLLocationCoordinate2DMake(latitude, longitude)
+                let currentRegion = MKCoordinateRegion(center: home2DCoordinates, span: span)
+                self.mapView.setRegion(currentRegion, animated: true)
+                
+                let place = self.createPlace(from: self.homeLocation)
+                self.currentPlace = place
+                self.mapView.addAnnotation(place)
+                self.mapView.addAnnotation(self.currentPlace)
+                self.initTimer()
             }
+            
         }
+    }
+    
+    func initTimer() {
+        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+            self.currentSeconds += 1
+        }
+    }
+    
+    func createPlace(from location: CLLocation) -> MKPlacemark {
+        let loc2DCoordinates = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
+        let place = MKPlacemark(coordinate: loc2DCoordinates)
+        return place
     }
     
     @IBAction func relaySwitchChanged(_ sender: Any) {
@@ -109,10 +142,16 @@ class HomeViewController: UIViewController {
     }
     
     func getAddress(from location: CLLocation, completion: @escaping (Address) -> Void) -> Void {
+        //limit to one request per minute for geocoder server
+        if self.currentSeconds < 60 {
+            print("next authorized in \(60 - self.currentSeconds)s deso")
+            return
+        }
         let geocoder = CLGeocoder()
         geocoder.reverseGeocodeLocation(location) { (infos, err) in
             if err != nil {
-                print("Error while reversing location: ", err! )
+                print("Error while reversing \(location): ", err! )
+                return
             }
             if infos == nil {
                 return
@@ -136,6 +175,7 @@ class HomeViewController: UIViewController {
             if addr.subThoroughfare != nil {
                 address.number = Int(addr.subThoroughfare!)
             }
+            self.currentSeconds = 0
             completion(address)
         }
     }
@@ -148,6 +188,7 @@ extension HomeViewController: CLLocationManagerDelegate {
             self.getAddress(from: location) { addr in
                 self.currentAdress = addr
             }
+            self.currentPlace = self.createPlace(from: location)
         }
     }
 }
