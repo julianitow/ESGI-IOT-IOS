@@ -24,6 +24,7 @@ class HomeViewController: UIViewController {
     var primaryHome: HMHome!
     var relayPowerStateCharacteristic: HMCharacteristic!
     var thermometre: HMAccessory!
+    var hygrometre: HMAccessory!
     var relay: HMAccessory!
     var humidityCharacteristic: HMCharacteristic!
     
@@ -64,12 +65,13 @@ class HomeViewController: UIViewController {
             
             //TMP for dev, à l'avenir, faire une entrée user pour sélectionner l'adresse du lieu principal
             self.homeLocation = self.locationManager.location
+            
             self.getAddress(from: self.homeLocation){ addr in
                 self.homeAddress = addr
                 let latitude:CLLocationDegrees = self.homeLocation.coordinate.latitude
                 let longitude:CLLocationDegrees = self.homeLocation.coordinate.longitude
-                let latDelta:CLLocationDegrees = 0.05
-                let lonDelta:CLLocationDegrees = 0.05
+                let latDelta:CLLocationDegrees = 0.001
+                let lonDelta:CLLocationDegrees = 0.001
                 let span = MKCoordinateSpan(latitudeDelta: latDelta, longitudeDelta: lonDelta)
                 
                 let home2DCoordinates = CLLocationCoordinate2DMake(latitude, longitude)
@@ -78,8 +80,10 @@ class HomeViewController: UIViewController {
                 
                 self.homePlace = self.createPlace(from: self.homeLocation, title: "home")
                 self.mapView.addAnnotation(self.homePlace)
+                
+                self.mapView.setUserTrackingMode(MKUserTrackingMode.follow, animated: true)
                 self.initTimerRequests()
-                self.restartHomeManager()
+                self.initAccessories()
             }
             
         }
@@ -104,15 +108,13 @@ class HomeViewController: UIViewController {
                 return
             }
             let temp = temperature as! Double
-            DispatchQueue.main.async {
-                self.tempValueLabel.text = "\(String(temp))°c"
-                self.currentTemp = temp
-            }
+            self.tempValueLabel.text = "\(String(temp))°c"
+            self.currentTemp = temp
         }
     }
     
     func updateHumidity() {
-        self.getValueFrom(accessory: self.thermometre, characteristicType: HMCharacteristicTypeCurrentRelativeHumidity) { val in
+        self.getValueFrom(accessory: self.hygrometre, characteristicType: HMCharacteristicTypeCurrentRelativeHumidity) { val in
             guard let humidity = val else {
                 return
             }
@@ -139,9 +141,13 @@ class HomeViewController: UIViewController {
         }
     }
     
-    func restartHomeManager() {
+    func restartHomeManager(manager: HMHomeManager? = nil) {
         Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { _ in
-            self.homeManager = HMHomeManager()
+            if manager != nil {
+                self.homeManager = manager
+            } else {
+                self.homeManager = HMHomeManager()
+            }
             self.homeManager.delegate = self
             self.initAccessories()
             self.temperatureRule()
@@ -172,12 +178,14 @@ class HomeViewController: UIViewController {
     }
     
     func getValueFrom(accessory: HMAccessory, characteristicType: String, completion: @escaping(Any?) -> Void) -> Void {
+        print(accessory.name)
         for service in accessory.services {
             for characteristic in service.characteristics {
                 if characteristic.characteristicType == characteristicType {
+                    print(accessory.name)
                     characteristic.readValue { err in
                         if err != nil {
-                            print("ERROR \(err!.localizedDescription)")
+                            print("ERROR \(accessory.name): \(err!.localizedDescription)")
                         }
                     }
                     completion(characteristic.value)
@@ -187,6 +195,7 @@ class HomeViewController: UIViewController {
     }
     
     func writeValue(characteristic: HMCharacteristic, value: Int) -> Void {
+        print(characteristic.characteristicType)
         characteristic.writeValue(value, completionHandler: { err in
             if err != nil { print("ERROR writing value: ", err! ) }
         })
@@ -195,14 +204,12 @@ class HomeViewController: UIViewController {
     func initAccessories() -> Void {
         for accessory in self.primaryHome.accessories {
             accessory.delegate = self
-            print(accessory.name)
             if accessory.name.contains("temp") {
                 self.thermometre = accessory
                 self.updateTemperature()
             } else if accessory.name.contains("hum") {
-                if self.thermometre != nil {
-                    self.updateHumidity()
-                }
+                self.hygrometre = accessory
+                self.updateHumidity()
             } else if accessory.name.lowercased().contains("relais") {
                 self.relay = accessory
                 self.updateRelay()
@@ -211,10 +218,14 @@ class HomeViewController: UIViewController {
     }
     
     func temperatureRule() {
-        if self.currentTemp < self.limitTemp {
-            self.writeValue(characteristic: self.relayPowerStateCharacteristic, value: 1)
+        if self.relay.isReachable {
+            if self.currentTemp < self.limitTemp {
+                self.writeValue(characteristic: self.relayPowerStateCharacteristic, value: 1)
+            } else {
+                self.writeValue(characteristic: self.relayPowerStateCharacteristic, value: 0)
+            }
         } else {
-            self.writeValue(characteristic: self.relayPowerStateCharacteristic, value: 0)
+            print("ERROR: relay not reachable")
         }
     }
     
@@ -265,19 +276,25 @@ extension HomeViewController: CLLocationManagerDelegate, MKMapViewDelegate {
             self.getAddress(from: location) { addr in
                 self.currentAdress = addr
             }
+            var annotations: [MKPointAnnotation] = []
             if self.currentPlace != nil {
                 self.mapView.removeAnnotation(self.currentPlace)
-                self.currentPlace = self.createPlace(from: location, title: "Me")
-                self.mapView.addAnnotation(self.currentPlace)
             }
+            
+            if location == self.homeLocation {
+                print("LOCATION HOME")
+            }
+            self.currentPlace = self.createPlace(from: location, title: "Me")
+            annotations.append(self.currentPlace)
+            self.mapView.addAnnotations(annotations)
         }
     }
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         let annotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: annotation.title ?? "place")
-        if annotation.title == self.homePlace.title {
+        if annotation.title == "home" {
             annotationView.markerTintColor = .red
-            annotationView.glyphText = self.homePlace.title
+            annotationView.glyphText = "home"
         } else {
             annotationView.markerTintColor = .blue
             annotationView.glyphText = "Me"
@@ -290,17 +307,15 @@ extension HomeViewController: HMHomeManagerDelegate, HMHomeDelegate {
     
     //HOMEAMANGER DELEGATE
     func homeManager(_ manager: HMHomeManager, didUpdate status: HMHomeManagerAuthorizationStatus) {
-        print("Updated Home")
+        print("Updated Home", status)
     }
     
     func homeManagerDidUpdateHomes(_ manager: HMHomeManager) {
         print("update homes")
-        self.homeManager = manager
-        self.homeManager.delegate = self
-        self.primaryHome = manager.homes.first
+        self.restartHomeManager(manager: manager)
+        self.primaryHome = self.homeManager.homes.first
         self.primaryHome.delegate = self
         self.houseNameLabel.text = self.primaryHome.name
-        self.initAccessories()
     }
 }
 
