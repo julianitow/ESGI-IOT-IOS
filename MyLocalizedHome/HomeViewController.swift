@@ -16,7 +16,7 @@ struct Address: CustomStringConvertible {
     var street: String!
     var number: Int!
     var city: String!
-    var description: String { "\(self.number) \(self.street), \(self.city) - \(self.postalCode), \(self.country)"}
+    var description: String { "\(self.number!) \(self.street!), \(self.city!), \(self.country!) \(self.postalCode!)"}
 }
 
 struct DefaultKeys {
@@ -97,26 +97,6 @@ class HomeViewController: UIViewController {
                 self.locationManager.startUpdatingLocation()
             }
         }
-        
-        /*self.getAddress(from: self.homeLocation){ addr in
-            self.homeAddress = addr
-            let latitude:CLLocationDegrees = self.homeLocation.coordinate.latitude
-            let longitude:CLLocationDegrees = self.homeLocation.coordinate.longitude
-            let latDelta:CLLocationDegrees = 0.001
-            let lonDelta:CLLocationDegrees = 0.001
-            let span = MKCoordinateSpan(latitudeDelta: latDelta, longitudeDelta: lonDelta)
-            
-            let home2DCoordinates = CLLocationCoordinate2DMake(latitude, longitude)
-            let currentRegion = MKCoordinateRegion(center: home2DCoordinates, span: span)
-            self.mapView.setRegion(currentRegion, animated: true)
-            
-            self.homePlace = self.createPlace(from: self.homeLocation, title: "home")
-            self.mapView.addAnnotation(self.homePlace)
-            
-            self.mapView.setUserTrackingMode(MKUserTrackingMode.follow, animated: true)
-            self.initTimerRequests()
-            self.initAccessories()
-        }*/
     }
     
     func initMap() {
@@ -366,7 +346,30 @@ class HomeViewController: UIViewController {
     }
     
     func getLocation(from address: Address, completion: @escaping (CLLocation) -> Void) -> Void {
-        
+        let geocoder = CLGeocoder()
+        geocoder.geocodeAddressString(self.homeAddress.description) { (placemarks, err) in
+            let alert = UIAlertController(title: "Something wrong", message: "Please check your address", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Ok !", style: .default) { action in
+                self.homeAddress = nil
+                self.setHomeAddress()
+            })
+            if err != nil {
+                print("ERROR", err?.localizedDescription)
+                self.present(alert, animated: true) {
+                    
+                }
+                return
+            }
+            if placemarks == nil {
+                print("ERROR placemarks nil")
+                self.present(alert, animated: true) {
+                    
+                }
+            }
+            
+            let location = placemarks?.first?.location
+            completion(location!)
+        }
     }
     
     func getAddress(from location: CLLocation, completion: @escaping (Address) -> Void) -> Void {
