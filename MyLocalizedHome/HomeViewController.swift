@@ -10,12 +10,18 @@ import MapKit
 import HomeKit
 import CoreLocation
 
-struct Address {
+struct Address: CustomStringConvertible {
     var country: String!
     var postalCode: Int!
     var street: String!
     var number: Int!
     var city: String!
+    var description: String { "\(self.number) \(self.street), \(self.city) - \(self.postalCode), \(self.country)"}
+}
+
+struct DefaultKeys {
+    static let homeAddress = "HomeAddress"
+    static let temperatureLimit = "TempLimit"
 }
 
 class HomeViewController: UIViewController {
@@ -27,6 +33,8 @@ class HomeViewController: UIViewController {
     var hygrometre: HMAccessory!
     var relay: HMAccessory!
     var humidityCharacteristic: HMCharacteristic!
+    
+    var parameters: UserDefaults!
     
     var locationManager: CLLocationManager!
     var home: HMHome!
@@ -42,7 +50,7 @@ class HomeViewController: UIViewController {
     var homeAddress: Address!
     var currentAdress: Address!
     
-    var currentSeconds: Int = 60
+    var currentSeconds = 60
     var currentPlace: MKPointAnnotation!
     var homePlace: MKPointAnnotation!
     
@@ -59,33 +67,161 @@ class HomeViewController: UIViewController {
         if CLLocationManager.locationServicesEnabled() {
             self.locationManager.delegate = self
             self.locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
-            self.locationManager.startUpdatingLocation()
             
             self.mapView.delegate = self
             
-            //TMP for dev, à l'avenir, faire une entrée user pour sélectionner l'adresse du lieu principal
-            self.homeLocation = self.locationManager.location
-            
-            self.getAddress(from: self.homeLocation){ addr in
-                self.homeAddress = addr
-                let latitude:CLLocationDegrees = self.homeLocation.coordinate.latitude
-                let longitude:CLLocationDegrees = self.homeLocation.coordinate.longitude
-                let latDelta:CLLocationDegrees = 0.001
-                let lonDelta:CLLocationDegrees = 0.001
-                let span = MKCoordinateSpan(latitudeDelta: latDelta, longitudeDelta: lonDelta)
-                
-                let home2DCoordinates = CLLocationCoordinate2DMake(latitude, longitude)
-                let currentRegion = MKCoordinateRegion(center: home2DCoordinates, span: span)
-                self.mapView.setRegion(currentRegion, animated: true)
-                
-                self.homePlace = self.createPlace(from: self.homeLocation, title: "home")
-                self.mapView.addAnnotation(self.homePlace)
-                
-                self.mapView.setUserTrackingMode(MKUserTrackingMode.follow, animated: true)
-                self.initTimerRequests()
-                self.initAccessories()
+            let defaults = UserDefaults.standard
+            if let homeAddress = defaults.string(forKey: DefaultKeys.homeAddress) {
+                print("Default address: good")
+            } else {
+                self.setHomeAddress()
             }
             
+            //TMP for dev, à l'avenir, faire une entrée user pour sélectionner l'adresse du lieu principal
+            //self.homeLocation = self.locationManager.location
+        }
+    }
+    
+    func start() {
+        if self.homeAddress != nil {
+            self.getLocation(from: self.homeAddress) { location in
+                self.homeLocation = location
+                self.initMap()
+                self.locationManager.startUpdatingLocation()
+            }
+        } else {
+            self.getAddress(from: self.homeLocation){ addr in
+                print("ADDRESS: \(addr)")
+                self.homeAddress = addr
+                self.initMap()
+                self.locationManager.startUpdatingLocation()
+            }
+        }
+        
+        /*self.getAddress(from: self.homeLocation){ addr in
+            self.homeAddress = addr
+            let latitude:CLLocationDegrees = self.homeLocation.coordinate.latitude
+            let longitude:CLLocationDegrees = self.homeLocation.coordinate.longitude
+            let latDelta:CLLocationDegrees = 0.001
+            let lonDelta:CLLocationDegrees = 0.001
+            let span = MKCoordinateSpan(latitudeDelta: latDelta, longitudeDelta: lonDelta)
+            
+            let home2DCoordinates = CLLocationCoordinate2DMake(latitude, longitude)
+            let currentRegion = MKCoordinateRegion(center: home2DCoordinates, span: span)
+            self.mapView.setRegion(currentRegion, animated: true)
+            
+            self.homePlace = self.createPlace(from: self.homeLocation, title: "home")
+            self.mapView.addAnnotation(self.homePlace)
+            
+            self.mapView.setUserTrackingMode(MKUserTrackingMode.follow, animated: true)
+            self.initTimerRequests()
+            self.initAccessories()
+        }*/
+    }
+    
+    func initMap() {
+        let latitude:CLLocationDegrees = self.homeLocation.coordinate.latitude
+        let longitude:CLLocationDegrees = self.homeLocation.coordinate.longitude
+        let latDelta:CLLocationDegrees = 0.001
+        let lonDelta:CLLocationDegrees = 0.001
+        let span = MKCoordinateSpan(latitudeDelta: latDelta, longitudeDelta: lonDelta)
+        
+        let home2DCoordinates = CLLocationCoordinate2DMake(latitude, longitude)
+        let currentRegion = MKCoordinateRegion(center: home2DCoordinates, span: span)
+        self.mapView.setRegion(currentRegion, animated: true)
+        
+        self.homePlace = self.createPlace(from: self.homeLocation, title: "home")
+        self.mapView.addAnnotation(self.homePlace)
+        
+        self.mapView.setUserTrackingMode(MKUserTrackingMode.follow, animated: true)
+        
+        //TO MOVE ELSEWHERE
+        self.initTimerRequests()
+        self.initAccessories()
+    }
+    
+    func setHomeAddress() {
+        let alert = UIAlertController(title: "Setup", message: "Set the primary home address", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler:{ (UIAlertAction)in
+                print("User click Dismiss button")
+        }))
+        
+        alert.addTextField() { textField in
+            textField.placeholder = "Country"
+            textField.autocapitalizationType = .sentences
+            textField.autocorrectionType = .yes
+        }
+        
+        alert.addTextField() { textField in
+            textField.placeholder = "City"
+            textField.autocapitalizationType = .sentences
+            textField.autocorrectionType = .yes
+        }
+        
+        alert.addTextField() { textField in
+            textField.placeholder = "postalCode"
+            textField.keyboardType = .numberPad
+        }
+        
+        alert.addTextField() { textField in
+            textField.placeholder = "Street"
+            textField.autocapitalizationType = .words
+        }
+        
+        alert.addTextField() { textField in
+            textField.placeholder = "number"
+            textField.keyboardType = .numberPad
+        }
+        
+        let useLocationAction = UIAlertAction(title: "Use current location", style: .default) { action in
+            self.homeLocation = self.locationManager.location
+            self.start()
+        }
+        
+        let useAddressFormAction = UIAlertAction(title: "Save address", style: .default) { action in
+            let country = alert.textFields![0].text
+            let city = alert.textFields![1].text
+            let postalCode = Int(alert.textFields![2].text!)
+            let street = alert.textFields![3].text
+            let number = Int(alert.textFields![4].text!)
+            let addr = Address(country: country, postalCode: postalCode, street: street, number: number, city: city)
+            self.homeAddress = addr
+            self.start()
+        }
+        
+        for textField in alert.textFields! {
+            textField.addTarget(self, action: #selector(self.textChanged), for: .editingChanged)
+        }
+        
+        alert.addAction(useAddressFormAction)
+        alert.addAction(useLocationAction)
+        alert.actions[1].isEnabled = false
+        
+        self.present(alert, animated: true) {
+            
+        }
+    }
+    
+    @objc func textChanged(sender: AnyObject) {
+        print("TEXT CHANGED")
+        var textInput = 0
+        let textField = sender as! UITextField
+        var resp: UIResponder = textField
+        while !(resp is UIAlertController) {
+            if resp.next != nil {
+                resp = resp.next!
+            }
+        }
+        let alert = resp as! UIAlertController
+        for textField in alert.textFields! {
+            if textField.text!.count > 0 {
+                textInput += 1
+            }
+        }
+        if textInput == 5 {
+            alert.actions[1].isEnabled = true
+        } else {
+            alert.actions[1].isEnabled = false
         }
     }
     
@@ -229,10 +365,15 @@ class HomeViewController: UIViewController {
         }
     }
     
+    func getLocation(from address: Address, completion: @escaping (CLLocation) -> Void) -> Void {
+        
+    }
+    
     func getAddress(from location: CLLocation, completion: @escaping (Address) -> Void) -> Void {
         //limit to one request per minute for geocoder server
+        print("REQUESTING ADDRESS FROM LOC")
         if self.currentSeconds < 60 {
-            //print("next authorized in \(60 - self.currentSeconds)s deso")
+            print("next authorized in \(60 - self.currentSeconds)s deso")
             return
         }
         let geocoder = CLGeocoder()
