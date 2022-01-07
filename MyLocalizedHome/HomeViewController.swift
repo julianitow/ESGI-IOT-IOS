@@ -59,6 +59,7 @@ class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.parameters = UserDefaults.standard
         self.homeManager = HMHomeManager()
         self.homeManager.delegate = self
         self.locationManager = CLLocationManager()
@@ -70,9 +71,10 @@ class HomeViewController: UIViewController {
             
             self.mapView.delegate = self
             
-            let defaults = UserDefaults.standard
-            if let homeAddress = defaults.string(forKey: DefaultKeys.homeAddress) {
-                print("Default address: good")
+            if let homeAddress = self.parameters.string(forKey: DefaultKeys.homeAddress) {
+                print("Default address: \(homeAddress)")
+                self.homeAddress = self.parseAddress(from: homeAddress)
+                self.start()
             } else {
                 self.setHomeAddress()
             }
@@ -118,6 +120,30 @@ class HomeViewController: UIViewController {
         //TO MOVE ELSEWHERE
         self.initTimerRequests()
         self.initAccessories()
+    }
+    
+    func parseAddress(from string: String) -> Address {
+        let comaSplt = string.split(separator: ",")
+        let splitCountryCP = comaSplt.last?.split(separator: " ")
+        let country = String(splitCountryCP!.first!)
+        let city = String(comaSplt[1])
+        let codePostalStr = splitCountryCP!.last!
+        let codePostal = Int(codePostalStr)
+        
+        let splitStreetNumber = comaSplt[0].split(separator: " ")
+        let numberStr = splitStreetNumber[0]
+        let number = Int(numberStr)
+        
+        var street = ""
+        for i in 1...splitStreetNumber.count - 1 {
+            street.append(contentsOf: splitStreetNumber[i])
+            if i < splitStreetNumber.count - 1 {
+                street.append(" ")
+            }
+        }
+                
+        let addr = Address(country: country, postalCode: codePostal, street: street, number: number, city: city)
+        return addr
     }
     
     func setHomeAddress() {
@@ -166,6 +192,7 @@ class HomeViewController: UIViewController {
             let number = Int(alert.textFields![4].text!)
             let addr = Address(country: country, postalCode: postalCode, street: street, number: number, city: city)
             self.homeAddress = addr
+            self.parameters.set(addr.description, forKey: DefaultKeys.homeAddress)
             self.start()
         }
         
